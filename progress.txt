@@ -23,3 +23,18 @@
   - The CSS variable `--ios-shadow` must be used as a string value in inline styles, not as a Tailwind class
   - Tailwind spacing override replaces defaults; keep fractional values (0.5, 1.5, 2.5, 3.5) and "px" manually
 ---
+
+## 2026-03-07 - Story 2
+- What was implemented: Shared UI Components with Full Interactive States
+  - Card.tsx: rounded-2xl, var(--card-bg), ios-shadow, whileHover scale+shadow
+  - Button.tsx: primary/gradient/ghost variants, sm/md/lg sizes, whileTap scale(0.95), useReducedMotion
+  - Input.tsx: h-11, rounded-xl, focus ring, hover border, disabled state, rightSlot, label, error
+  - Toast.tsx: AnimatePresence spring slide from top, auto-dismiss 3s, success/error/info variants
+  - LoadingSpinner.tsx: SVG with stroke-dasharray, sm/md/lg sizes, color prop
+  - ErrorBanner.tsx: AlertCircle icon, dismiss X button, optional retry, AnimatePresence
+- Files changed: components/ui/Card.tsx, Button.tsx, Input.tsx, Toast.tsx, LoadingSpinner.tsx, ErrorBanner.tsx
+- **Learnings for future iterations:**
+  - Button extending ButtonHTMLAttributes causes TS conflict with Framer Motion's onDrag — define explicit props instead of spreading HTMLButtonElement attributes
+  - CSS variables (var(--ios-shadow)) must be used in style prop, not as Tailwind utility values
+  - useReducedMotion() returns null until mounted; treat null as false (don't reduce motion on initial render)
+---
