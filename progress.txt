@@ -70,3 +70,15 @@
   - Use useRef to prevent double-calling onLocationFound in StrictMode
   - navigator.geolocation.PERMISSION_DENIED is accessed via err.code === err.PERMISSION_DENIED
 ---
+
+## 2026-03-07 - Story 6
+- What was implemented: Mapbox Geocoding API Integration
+  - lib/mapbox-geocoding.ts: geocodeAddress (up to 5 results, proximity bias), reverseGeocode (place_name string)
+  - Reads NEXT_PUBLIC_MAPBOX_TOKEN, throws descriptive error if missing
+  - All fetch responses typed with interfaces, zero any
+- Files changed: lib/mapbox-geocoding.ts
+- **Learnings for future iterations:**
+  - Mapbox center is [lng, lat] (not [lat, lng]) — be careful with coordinate order
+  - Use URLSearchParams for query string building (avoids manual encoding)
+  - Cast .json() response with `as InterfaceType` to get type safety without any
+---

@@ -110,7 +110,7 @@
         "Zero 'any', all fetch responses typed, npx tsc --noEmit passes"
       ],
       "priority": 3,
-      "passes": false
+      "passes": true
     },
     {
       "id": 7,
