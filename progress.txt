@@ -1,0 +1,25 @@
+## Codebase Patterns
+- Next.js 14 App Router, TypeScript 5, Tailwind CSS, Framer Motion, Lucide React
+- CSS variables in globals.css: --background, --card-bg, --foreground, --muted, --ios-blue, --primary, --secondary, --cta, --arc-purple-pink, --arc-blue-cyan, --arc-gold, --ios-shadow, --ios-shadow-lg, --ios-shadow-sm
+- 8px spacing grid in tailwind.config.ts (spacing.1=8px, spacing.2=16px, etc.)
+- SF Pro Display loaded via next/font/local with system-ui fallback (preload:false to avoid 404 if fonts not present)
+- node_modules NOT tracked in git (.gitignore); run npm install after clone
+- Use `npx tsc --noEmit` + `npm run lint` for quality checks
+---
+
+## 2026-03-07 - Story 1
+- What was implemented: Project Setup & Design Foundation
+  - Created package.json with Next.js 14, React 18, framer-motion, lucide-react, mapbox-gl, react-map-gl, TypeScript, Tailwind
+  - Created app/globals.css with all iOS × Arc CSS custom properties (colors, gradients, shadows, body styles)
+  - Created tailwind.config.ts with 8px grid, iOS color palette, SF Pro font family
+  - Created app/layout.tsx with SF Pro Display via next/font/local (weights 400/500/600/700), metadata, lang="en"
+  - Created tsconfig.json, postcss.config.js, .eslintrc.json, .gitignore, .env.local.example
+  - Created minimal app/page.tsx placeholder
+  - Removed previously-tracked node_modules from git index
+- Files changed: package.json, package-lock.json, app/globals.css, app/layout.tsx, app/page.tsx, tailwind.config.ts, tsconfig.json, postcss.config.js, .eslintrc.json, .gitignore, .env.local.example
+- **Learnings for future iterations:**
+  - node_modules was previously committed; had to `git rm -r --cached node_modules` to untrack
+  - SF Pro Display font files don't exist in /public/fonts/ yet (use preload:false to avoid build errors)
+  - The CSS variable `--ios-shadow` must be used as a string value in inline styles, not as a Tailwind class
+  - Tailwind spacing override replaces defaults; keep fractional values (0.5, 1.5, 2.5, 3.5) and "px" manually
+---
