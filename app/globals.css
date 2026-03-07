@@ -1,0 +1,119 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   iOS × Arc Design Tokens
+   ============================================ */
+
+:root {
+  /* iOS Base Colors */
+  --background: #FAFAFA;
+  --card-bg: #F5F5F7;
+  --foreground: #1D1D1F;
+  --muted: #86868B;
+
+  /* iOS Accent */
+  --ios-blue: #007AFF;
+  --primary: #4F46E5;
+  --secondary: #818CF8;
+  --cta: #F97316;
+
+  /* Arc Gradients */
+  --arc-purple-pink: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
+  --arc-blue-cyan: linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%);
+  --arc-gold: linear-gradient(135deg, #F59E0B 0%, #EF4444 100%);
+
+  /* iOS Shadows */
+  --ios-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --ios-shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --ios-shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+/* ============================================
+   Base Styles
+   ============================================ */
+
+html,
+body {
+  overflow-x: hidden;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Heading letter-spacing */
+h1,
+h2,
+h3,
+h4 {
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+/* ============================================
+   Custom Scrollbar
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--card-bg);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--muted);
+  border-radius: 3px;
+  opacity: 0.5;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  opacity: 0.8;
+}
+
+/* ============================================
+   Focus Visible
+   ============================================ */
+
+:focus-visible {
+  outline: 2px solid var(--ios-blue);
+  outline-offset: 2px;
+}
+
+/* ============================================
+   Center Marker Pulse Animation
+   ============================================ */
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+.pulse-ring {
+  animation: pulse-ring 2s ease-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse-ring {
+    animation-duration: 0.001ms;
+  }
+}
