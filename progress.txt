@@ -126,3 +126,12 @@
   - Check navigator.userAgent for /iPhone|iPad|iPod/i to choose Apple vs Google Maps URL
   - reverseGeocode import is unused in venues.ts — remove it to keep lint clean
 ---
+
+## 2026-03-07 - Story 11
+- What was implemented: Share Meetup Link
+  - components/ShareButton.tsx: fixed top-right, generates URL with lat/lng/zoom, clipboard copy, Toast via createPortal, AnimatePresence for show/hide
+- Files changed: components/ShareButton.tsx
+- **Learnings for future iterations:**
+  - createPortal needs `typeof document !== "undefined"` guard for SSR
+  - navigator.clipboard.writeText returns Promise — use async/await with try/catch
+---
