@@ -38,3 +38,13 @@
   - CSS variables (var(--ios-shadow)) must be used in style prop, not as Tailwind utility values
   - useReducedMotion() returns null until mounted; treat null as false (don't reduce motion on initial render)
 ---
+
+## 2026-03-07 - Story 3
+- What was implemented: TypeScript Types & Geo Utility Functions
+  - lib/types.ts: Coordinates, Location, Venue, MapState interfaces
+  - lib/geo-utils.ts: calculateCenter (avg lat/lng), calculateBounds (SW/NE bbox with padding), calculateDistance (Haversine in meters), formatDistance (m/km)
+- Files changed: lib/types.ts, lib/geo-utils.ts
+- **Learnings for future iterations:**
+  - Import types with `import type` to avoid runtime imports
+  - All geo functions throw on empty arrays rather than returning undefined
+---
