@@ -1,0 +1,245 @@
+{
+  "projectName": "meet-in-the-middle-v2",
+  "branchName": "feature/initial-build",
+  "userStories": [
+    {
+      "id": 1,
+      "title": "Project Setup & Design Foundation",
+      "description": "Initialize the iOS × Arc design foundation. Create globals.css with all CSS custom properties for colors, gradients, shadows, and typography. Configure tailwind.config.ts with 8px grid and iOS color palette. Set up app/layout.tsx loading SF Pro Display via next/font/local with system-ui fallback, per DESIGN_SYSTEM.md (max 2 font families, no bare Inter as primary).",
+      "acceptanceCriteria": [
+        "app/globals.css defines CSS variables: --background: #FAFAFA, --card-bg: #F5F5F7, --foreground: #1D1D1F, --muted: #86868B, --ios-blue: #007AFF, --primary: #4F46E5, --secondary: #818CF8, --cta: #F97316",
+        "globals.css defines Arc gradient vars: --arc-purple-pink: linear-gradient(135deg,#8B5CF6 0%,#EC4899 100%), --arc-blue-cyan: linear-gradient(135deg,#3B82F6 0%,#06B6D4 100%), --arc-gold: linear-gradient(135deg,#F59E0B 0%,#EF4444 100%)",
+        "globals.css defines shadow tokens: --ios-shadow: 0 2px 8px rgba(0,0,0,0.08), --ios-shadow-lg: 0 4px 16px rgba(0,0,0,0.12), --ios-shadow-sm: 0 1px 4px rgba(0,0,0,0.06)",
+        "globals.css sets base body styles: background var(--background), color var(--foreground), letter-spacing -0.02em on h1-h4, line-height 1.5 body / 1.2 headings",
+        "tailwind.config.ts extends colors with iOS palette using CSS variables (colors.background, colors.foreground, colors.card, colors.muted, colors.ios-blue, colors.primary, colors.secondary)",
+        "tailwind.config.ts uses 8px base spacing grid (spacing scale: 1=8px, 2=16px, 3=24px, 4=32px, 6=48px)",
+        "tailwind.config.ts registers fontFamily.sf-pro pointing to 'SF Pro Display' with system-ui and sans-serif fallbacks",
+        "app/layout.tsx loads SF Pro Display via next/font/local from /public/fonts/ directory (weights 400,500,600,700); falls back to system-ui — NOT bare Inter as primary per DESIGN_SYSTEM.md",
+        "app/layout.tsx sets metadata: title 'Meet in the Middle', description 'Find the perfect meetup spot between you and your friend'",
+        "app/layout.tsx applies font className to html element, lang='en'",
+        "Light theme only: no dark mode classes or media queries",
+        "framer-motion, lucide-react, mapbox-gl, react-map-gl installed in package.json",
+        "npx tsc --noEmit passes with zero errors"
+      ],
+      "priority": 1,
+      "passes": false
+    },
+    {
+      "id": 2,
+      "title": "Shared UI Components with Full Interactive States",
+      "description": "Build the complete iOS-style shared component library using Framer Motion. Every interactive component must implement all five states: Default, Hover, Active, Focus, Disabled. Components: Card, Button, Input, Toast, LoadingSpinner, ErrorBanner. All consume CSS variables from Story 1.",
+      "acceptanceCriteria": [
+        "components/ui/Card.tsx: rounded-2xl, bg var(--card-bg), box-shadow var(--ios-shadow), padding 24px; Framer Motion whileHover {scale:1.01, boxShadow: var(--ios-shadow-lg)} transition 150ms ease-out; no glassmorphism (no backdrop-blur)",
+        "components/ui/Button.tsx: primary variant uses #007AFF bg, white text, rounded-xl, min-height 44px; Framer Motion whileTap {scale:0.95} spring {stiffness:300,damping:30}, whileHover {brightness:1.08}; focus: ring-2 ring-offset-2 ring-[#007AFF] outline-none; disabled: opacity-50 cursor-not-allowed pointer-events-none",
+        "Button supports variants: primary (#007AFF), gradient (arc-purple-pink via bg-gradient-to), ghost (transparent with border), and sizes: sm (h-9), md (h-11 = 44px), lg (h-13 = 52px)",
+        "components/ui/Input.tsx: border border-[#E5E5EA] rounded-xl h-11 (44px) px-4; focus: border-[#007AFF] ring-2 ring-[#007AFF]/20 outline-none; placeholder color var(--muted); hover: border-[#C7C7CC]; disabled: bg-[#F5F5F7] cursor-not-allowed opacity-60",
+        "components/ui/Toast.tsx: fixed top-4 left-1/2 -translate-x-1/2 z-50; Framer Motion initial {y:-80,opacity:0} animate {y:0,opacity:1} exit {y:-80,opacity:0} spring {stiffness:400,damping:35}; rounded-2xl shadow var(--ios-shadow-lg); auto-dismiss after 3000ms; variants: success (green-500 left border), error (red-500 left border), info (#007AFF left border)",
+        "components/ui/LoadingSpinner.tsx: SVG circle with stroke-dasharray animation; sizes sm (16px) / md (24px) / lg (40px); accepts color prop defaulting to currentColor; CSS animation keyframes at 60fps",
+        "components/ui/ErrorBanner.tsx: slides in from top with Framer Motion (same spring as Toast); shows AlertCircle Lucide icon, error message string, optional onRetry callback renders Button ghost variant 'Try again', X dismiss button; rounded-2xl var(--ios-shadow)",
+        "All components: cursor-pointer on all clickable elements; Lucide icons only (no emoji); text contrast ratio ≥ 4.5:1 against backgrounds",
+        "All components use useReducedMotion() from framer-motion; when true, set all animation durations to 0 and skip spring transitions",
+        "All components are TypeScript with strict explicit prop types, zero 'any'",
+        "All components export named types for their props (e.g., ButtonProps, CardProps)",
+        "npx tsc --noEmit passes with zero errors"
+      ],
+      "priority": 1,
+      "passes": false
+    },
+    {
+      "id": 3,
+      "title": "TypeScript Types & Geo Utility Functions",
+      "description": "Define all shared TypeScript types and pure geo utility functions. Foundational infrastructure required before map and venue features.",
+      "acceptanceCriteria": [
+        "lib/types.ts exports: Coordinates {lat:number;lng:number}, Location {id:string;coordinates:Coordinates;address:string;label:string}, Venue {id:string;name:string;type:'bar'|'cafe'|'restaurant';coordinates:Coordinates;distance:number;address:string}, MapState {userLocation:Location|null;friendLocation:Location|null;centerLocation:Location|null;venues:Venue[];}",
+        "lib/geo-utils.ts exports calculateCenter(locations: Coordinates[]): Coordinates — geographic midpoint (average lat/lng), throws if array empty",
+        "lib/geo-utils.ts exports calculateBounds(locations: Coordinates[], paddingPercent?: number): {sw:Coordinates;ne:Coordinates} — SW/NE bounding box with 20% default padding",
+        "lib/geo-utils.ts exports calculateDistance(a: Coordinates, b: Coordinates): number — Haversine formula, returns meters",
+        "lib/geo-utils.ts exports formatDistance(meters: number): string — returns '250m' under 1000, '1.2km' above",
+        "All functions have explicit return types, zero 'any'",
+        "npx tsc --noEmit passes with zero errors"
+      ],
+      "priority": 2,
+      "passes": false
+    },
+    {
+      "id": 4,
+      "title": "Mapbox GL JS Map Component",
+      "description": "Integrate Mapbox GL JS as the map provider using react-map-gl. Full viewport map with Streets style, navigation controls, and dynamic import to prevent SSR issues.",
+      "acceptanceCriteria": [
+        "components/Map/MapboxMap.tsx uses next/dynamic with {ssr:false} to prevent SSR hydration mismatch",
+        "Map renders with style 'mapbox://styles/mapbox/streets-v12'",
+        "Default initialViewState: longitude -74.006, latitude 40.7128, zoom 12",
+        "NavigationControl added (zoom +/- and compass), position top-right",
+        "Map fills 100% of parent container height (h-full w-full)",
+        "NEXT_PUBLIC_MAPBOX_TOKEN read from process.env; if undefined or empty, renders ErrorBanner 'Map token missing — add NEXT_PUBLIC_MAPBOX_TOKEN to .env.local'",
+        ".env.local.example created with: NEXT_PUBLIC_MAPBOX_TOKEN=your_mapbox_token_here",
+        "MapboxMap accepts props: markers (ReactNode), onMapClick ((coords:Coordinates)=>void) optional, ref for imperative flyTo access",
+        "No OpenStreetMap tile sources used anywhere",
+        "npx tsc --noEmit passes with zero errors"
+      ],
+      "priority": 2,
+      "passes": false
+    },
+    {
+      "id": 5,
+      "title": "Auto Geolocation Detection Hook & UI",
+      "description": "Auto-detect user location on mount via browser Geolocation API. Provide loading, success, denied, and error states with iOS-style transitions.",
+      "acceptanceCriteria": [
+        "hooks/useGeolocation.ts returns {coordinates:Coordinates|null, address:string|null, status:'idle'|'loading'|'success'|'error'|'denied', error:string|null, retry:()=>void}",
+        "Geolocation requested automatically on mount with options: enableHighAccuracy:true, timeout:10000, maximumAge:300000",
+        "components/LocationDetector.tsx: status=loading shows LoadingSpinner md + 'Finding your location...' text",
+        "status=success: calls onLocationFound(location) callback, component renders null (pin shown on map instead)",
+        "status=denied: renders Input component with label 'Enter your location' + Button primary 'Confirm' for manual entry",
+        "status=error: renders ErrorBanner with message and retry button that calls retry()",
+        "All state transitions animated with Framer Motion AnimatePresence (fade + y shift 8px)",
+        "Zero 'any', npx tsc --noEmit passes"
+      ],
+      "priority": 3,
+      "passes": false
+    },
+    {
+      "id": 6,
+      "title": "Mapbox Geocoding API Integration",
+      "description": "Address-to-coordinates and reverse geocoding via Mapbox Geocoding API v5. Used for manual location entry and friend address input.",
+      "acceptanceCriteria": [
+        "lib/mapbox-geocoding.ts exports geocodeAddress(query:string, proximity?:Coordinates): Promise<Location[]> — calls Mapbox Geocoding API, returns up to 5 results typed as Location[]",
+        "lib/mapbox-geocoding.ts exports reverseGeocode(coords:Coordinates): Promise<string> — returns place_name string for coordinates",
+        "Reads NEXT_PUBLIC_MAPBOX_TOKEN from process.env; throws descriptive error if missing",
+        "Results filtered to types: place, address, poi",
+        "On HTTP error or network failure: throws Error with message from API response",
+        "Zero 'any', all fetch responses typed, npx tsc --noEmit passes"
+      ],
+      "priority": 3,
+      "passes": false
+    },
+    {
+      "id": 7,
+      "title": "Floating Friend Input Card",
+      "description": "Arc-style floating card fixed to bottom of screen for friend location entry. Features gradient border, debounced autocomplete dropdown, and spring slide animations.",
+      "acceptanceCriteria": [
+        "components/FriendInput.tsx: fixed bottom-6 left-4 right-4 (mobile), max-w-md mx-auto on desktop; rounded-2xl bg-white; 1px gradient border using CSS background-clip:padding-box + outline trick with --arc-purple-pink",
+        "Heading 'Where is your friend?' text-2xl font-semibold tracking-tight inside card",
+        "Uses Input component; autocomplete dropdown appears after 300ms debounce on input change, shows up to 5 geocoded suggestions",
+        "Each suggestion: min-height 44px, px-4, hover:bg-[#F5F5F7] cursor-pointer, shows primary label bold + secondary address text muted",
+        "On suggestion select or Enter: calls geocodeAddress, shows LoadingSpinner inside Input right slot, on resolve calls onFriendLocated(location) prop",
+        "On success: Framer Motion exit animation y:0→120 opacity:1→0 spring {stiffness:300,damping:30}",
+        "On geocoding error: inline error text below input in red-500, Lucide AlertCircle icon",
+        "Card entrance: Framer Motion initial {y:100,opacity:0} animate {y:0,opacity:1} spring {stiffness:300,damping:30}",
+        "Keyboard: Escape clears + closes dropdown, ArrowUp/Down navigate suggestions, Enter selects highlighted",
+        "Zero 'any', npx tsc --noEmit passes"
+      ],
+      "priority": 4,
+      "passes": false
+    },
+    {
+      "id": 8,
+      "title": "Custom Gradient Map Markers",
+      "description": "Three custom SVG markers for user (blue), friend (purple-pink gradient), and center (gold pulsing) locations. All animate on mount with spring drop physics.",
+      "acceptanceCriteria": [
+        "components/Map/UserMarker.tsx: 40px circle, fill #007AFF, 3px white ring (stroke white stroke-width 3), filter drop-shadow(0 2px 8px rgba(0,0,0,0.2))",
+        "components/Map/FriendMarker.tsx: 40px circle, SVG linearGradient #8B5CF6→#EC4899, 3px white ring, same shadow",
+        "components/Map/CenterMarker.tsx: 40px circle, SVG linearGradient #F59E0B→#EF4444, 3px white ring; separate pulse ring element: CSS keyframes scale(1)→scale(2.5) opacity(0.6)→opacity(0) 2s ease-out infinite",
+        "All markers: Framer Motion initial {y:-24,opacity:0} animate {y:0,opacity:1} transition spring {stiffness:400,damping:25} on mount",
+        "All markers wrapped in react-map-gl Marker component with coordinates prop",
+        "Click any marker: opens react-map-gl Popup showing address string; Popup styled rounded-xl white bg var(--ios-shadow) p-4 text-sm",
+        "All markers accept props: coordinates:Coordinates, label:string; Popup closeable with Framer Motion fadeOut",
+        "Zero 'any', npx tsc --noEmit passes"
+      ],
+      "priority": 4,
+      "passes": false
+    },
+    {
+      "id": 9,
+      "title": "Center Calculation & Map Auto-Fit",
+      "description": "Calculate geographic midpoint when both locations are set. Drop center marker and smoothly fit map bounds to show all pins.",
+      "acceptanceCriteria": [
+        "When userLocation and friendLocation are both non-null, calculateCenter() runs automatically (useEffect dependency array)",
+        "CenterMarker placed at calculated midpoint coordinates",
+        "Map calls fitBounds with padding {top:80,bottom:80,left:80,right:80} to show all three pins",
+        "Mapbox flyTo options: speed:1.2, curve:1.42, essential:true",
+        "If either location changes, center recalculates and map re-fits",
+        "CenterMarker pulse animation starts only after drop animation onAnimationComplete fires",
+        "centerLocation stored in MapState and exposed via prop/callback for venue fetching",
+        "npx tsc --noEmit passes"
+      ],
+      "priority": 5,
+      "passes": false
+    },
+    {
+      "id": 10,
+      "title": "Nearby Venues Fetch & iOS Card List",
+      "description": "Fetch bars, cafes, and restaurants within 500m of the center point. Display as iOS-style scrollable cards with stagger entrance animation.",
+      "acceptanceCriteria": [
+        "lib/venues.ts exports fetchNearbyVenues(center:Coordinates, radiusMeters?:number): Promise<Venue[]> — uses Mapbox Places API (poi category: bar,cafe,restaurant) or Overpass API fallback; default 500m radius; returns max 10 results",
+        "Venue distance calculated using calculateDistance from geo-utils; address from reverse geocode or feature properties",
+        "components/VenueList.tsx: horizontal scroll (overflow-x-auto, flex gap-4, pb-4 for scrollbar) on mobile <768px; vertical flex-col gap-4 on md+",
+        "components/VenueCard.tsx: rounded-2xl bg var(--card-bg) shadow var(--ios-shadow) p-6 min-w-[240px]; shows venue name (font-semibold), type icon (Lucide Coffee for cafe, Beer for bar, UtensilsCrossed for restaurant), formatted distance, 'Directions' Button ghost sm",
+        "VenueCard Framer Motion whileHover {scale:1.02, boxShadow: var(--ios-shadow-lg)} transition 150ms ease-out",
+        "Directions: navigator.userAgent includes iPhone/iPad → maps.apple.com/?daddr=lat,lng; else maps.google.com/?q=lat,lng",
+        "Loading state: 3 skeleton placeholder cards (animate-pulse, same rounded-2xl dimensions, gray bg strips)",
+        "Empty state: centered MapPin icon (Lucide w-8 h-8 text-[var(--muted)]) + 'No venues found nearby' text-base text-[var(--muted)]",
+        "VenueList stagger: Framer Motion variants staggerChildren:0.05, each card initial {opacity:0,y:20} animate {opacity:1,y:0}",
+        "npx tsc --noEmit passes"
+      ],
+      "priority": 5,
+      "passes": false
+    },
+    {
+      "id": 11,
+      "title": "Share Meetup Link",
+      "description": "Generate a shareable URL encoding the center coordinates. Copy to clipboard with iOS-style Toast feedback. Auto-load state from URL on open.",
+      "acceptanceCriteria": [
+        "components/ShareButton.tsx: fixed top-4 right-4 z-10; rounded-xl bg-white shadow var(--ios-shadow) p-3 (44px touch target); Share2 Lucide icon w-5 h-5",
+        "On click: generates URL ?lat={center.lat}&lng={center.lng}&zoom=14 using window.location.origin + pathname",
+        "navigator.clipboard.writeText on success: shows Toast info 'Link copied to clipboard!'",
+        "On clipboard error: shows Toast error 'Could not copy link'",
+        "ShareButton only renders when centerLocation !== null (conditional render with AnimatePresence fadeIn)",
+        "app/page.tsx reads searchParams.lat and searchParams.lng on mount; if present, sets centerLocation and flies map to those coords at zoom 14",
+        "ShareButton Framer Motion: whileTap {scale:0.95} whileHover {scale:1.05} spring {stiffness:300,damping:30}; visible focus ring ring-2 ring-[#007AFF]",
+        "npx tsc --noEmit passes"
+      ],
+      "priority": 6,
+      "passes": false
+    },
+    {
+      "id": 12,
+      "title": "Main Page Layout & Responsive Design",
+      "description": "Compose all components into the final responsive page. Mobile: full-screen map with floating overlays. Desktop: 400px side panel + map. Safe area insets for iPhone notch.",
+      "acceptanceCriteria": [
+        "app/page.tsx: manages MapState with useState; passes setUserLocation, setFriendLocation, setCenterLocation, setVenues handlers as props",
+        "app/page.tsx reads URL searchParams for lat/lng (share link) and initializes state accordingly",
+        "components/HomeContent.tsx mobile (<1024px): map fills 100vh 100vw; FriendInput floats fixed bottom; VenueList slides up from bottom as fixed panel after centerLocation set; ShareButton fixed top-right",
+        "components/HomeContent.tsx desktop (≥1024px): flex-row; left panel w-[400px] flex-shrink-0 overflow-y-auto p-8 contains: heading 'Meet in the Middle' gradient text, LocationDetector, FriendInput (inline not floating), VenueList vertical; right side flex-1 is map",
+        "Heading uses gradient text: bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] bg-clip-text text-transparent text-3xl font-bold tracking-tight",
+        "Safe area: body padding-top env(safe-area-inset-top), padding-bottom env(safe-area-inset-bottom) via globals.css",
+        "All interactive elements verify ≥44px touch target across 375px, 768px, 1024px, 1440px breakpoints",
+        "No horizontal overflow on any breakpoint (overflow-x-hidden on html/body)",
+        "Framer Motion AnimatePresence wraps: FriendInput, VenueList, all Map markers, ShareButton",
+        "ShareButton uses React createPortal to document.body to avoid overflow:hidden clipping",
+        "npx tsc --noEmit passes"
+      ],
+      "priority": 6,
+      "passes": false
+    },
+    {
+      "id": 13,
+      "title": "Spring Animations & Motion Polish",
+      "description": "Final animation pass ensuring all interactions feel native iOS. Centralize spring configs, add page-load stagger, verify prefers-reduced-motion, confirm 60fps.",
+      "acceptanceCriteria": [
+        "lib/motion.ts exports SPRING_CONFIG = {type:'spring',stiffness:300,damping:30} and SPRING_FAST = {type:'spring',stiffness:400,damping:35} as const; all components import from here",
+        "HomeContent page load: Framer Motion variants {container:{staggerChildren:0.08}, item:{initial:{opacity:0,y:16},animate:{opacity:1,y:0}}}; wraps all top-level children",
+        "All Button whileTap {scale:0.95} and whileHover {scale:1.02} use SPRING_CONFIG",
+        "All Card whileHover {scale:1.01} uses transition {duration:0.15,ease:'easeOut'}",
+        "VenueList staggerChildren:0.05 each card {initial:{opacity:0,y:20},animate:{opacity:1,y:0}} uses SPRING_CONFIG",
+        "FriendInput: entrance spring slide-up, exit spring slide-down; no linear easing anywhere",
+        "Map markers: drop spring {stiffness:400,damping:25} y:-30→0",
+        "CenterMarker pulse: CSS @keyframes 'pulse-ring' scale(1)→scale(2.5) opacity(0.6)→opacity(0) 2s ease-out infinite; only active after mount animation completes (onAnimationComplete callback sets state)",
+        "useReducedMotion() imported in every animated component; when true: all Framer Motion transition durations set to 0, CSS animation-duration overridden to 0.001ms",
+        "All animated properties are transform or opacity only (no animating width/height/top/left to avoid layout thrashing)",
+        "npx tsc --noEmit passes with zero errors"
+      ],
+      "priority": 7,
+      "passes": false
+    }
+  ]
+}
