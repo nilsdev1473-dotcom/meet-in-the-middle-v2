@@ -129,7 +129,7 @@
         "Zero 'any', npx tsc --noEmit passes"
       ],
       "priority": 4,
-      "passes": false
+      "passes": true
     },
     {
       "id": 8,

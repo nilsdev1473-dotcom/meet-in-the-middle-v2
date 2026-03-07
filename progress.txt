@@ -82,3 +82,14 @@
   - Use URLSearchParams for query string building (avoids manual encoding)
   - Cast .json() response with `as InterfaceType` to get type safety without any
 ---
+
+## 2026-03-07 - Story 7
+- What was implemented: Floating Friend Input Card
+  - components/FriendInput.tsx: gradient border via wrapper div with padding trick, debounced geocoding, keyboard nav, AnimatePresence spring animations
+  - inline prop for desktop side panel (disables fixed positioning)
+- Files changed: components/FriendInput.tsx
+- **Learnings for future iterations:**
+  - Gradient border: wrap in div with gradient bg + 1px padding + inner div with bg-white
+  - Catch errors with empty catch block `catch {}` when error type isn't needed
+  - useCallback wrapping fetchSuggestions prevents unnecessary re-fetches on re-renders
+---
