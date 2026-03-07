@@ -48,3 +48,15 @@
   - Import types with `import type` to avoid runtime imports
   - All geo functions throw on empty arrays rather than returning undefined
 ---
+
+## 2026-03-07 - Story 4
+- What was implemented: Mapbox GL JS Map Component
+  - components/Map/MapboxMapInner.tsx: full map implementation with react-map-gl, NavigationControl, forwardRef for flyTo/fitBounds
+  - components/Map/MapboxMap.tsx: SSR-safe wrapper using next/dynamic with ssr:false
+  - ErrorBanner fallback when NEXT_PUBLIC_MAPBOX_TOKEN is missing
+- Files changed: components/Map/MapboxMap.tsx, components/Map/MapboxMapInner.tsx
+- **Learnings for future iterations:**
+  - Split map into MapboxMapInner (actual logic) + MapboxMap (dynamic wrapper) to properly type forwardRef with dynamic imports
+  - Import "mapbox-gl/dist/mapbox-gl.css" inside the inner component to avoid SSR issues
+  - react-map-gl MapRef provides flyTo/fitBounds directly; wrap with imperative handle for external control
+---

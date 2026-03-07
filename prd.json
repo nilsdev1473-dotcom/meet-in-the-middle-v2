@@ -78,7 +78,7 @@
         "npx tsc --noEmit passes with zero errors"
       ],
       "priority": 2,
-      "passes": false
+      "passes": true
     },
     {
       "id": 5,
