@@ -114,3 +114,15 @@
   - Use prev-value refs to skip redundant recalculations in useEffect
   - fitBounds needs [sw, ne] not [ne, sw] — verify coordinate order
 ---
+
+## 2026-03-07 - Story 10
+- What was implemented: Nearby Venues Fetch & iOS Card List
+  - lib/venues.ts: fetchNearbyVenues using Mapbox POI, 500m radius, 10 results, type detection, distance sort
+  - components/VenueCard.tsx: icon, formatted distance, Directions button (Apple/Google Maps)
+  - components/VenueList.tsx: stagger animation, horizontal scroll mobile/vertical desktop, skeleton, empty state
+- Files changed: lib/venues.ts, components/VenueCard.tsx, components/VenueList.tsx
+- **Learnings for future iterations:**
+  - Mapbox Geocoding POI search works per category — fetch bar/cafe/restaurant separately and deduplicate by ID
+  - Check navigator.userAgent for /iPhone|iPad|iPod/i to choose Apple vs Google Maps URL
+  - reverseGeocode import is unused in venues.ts — remove it to keep lint clean
+---

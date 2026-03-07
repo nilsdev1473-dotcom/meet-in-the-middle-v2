@@ -182,7 +182,7 @@
         "npx tsc --noEmit passes"
       ],
       "priority": 5,
-      "passes": false
+      "passes": true
     },
     {
       "id": 11,
