@@ -93,3 +93,15 @@
   - Catch errors with empty catch block `catch {}` when error type isn't needed
   - useCallback wrapping fetchSuggestions prevents unnecessary re-fetches on re-renders
 ---
+
+## 2026-03-07 - Story 8
+- What was implemented: Custom Gradient Map Markers
+  - UserMarker.tsx: blue circle, white ring, popup on click
+  - FriendMarker.tsx: purple-pink SVG linearGradient, popup
+  - CenterMarker.tsx: gold-red SVG linearGradient, CSS pulse-ring class after drop animation (onAnimationComplete)
+- Files changed: components/Map/UserMarker.tsx, FriendMarker.tsx, CenterMarker.tsx
+- **Learnings for future iterations:**
+  - SVG linearGradient IDs must be unique per page; use descriptive IDs
+  - Marker anchor="bottom" positions marker tip at coordinate
+  - onAnimationComplete fires after the initial mount animation, used to start pulse
+---
