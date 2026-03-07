@@ -102,3 +102,10 @@ If there are still stories with `passes: false`, end your response normally (ano
 - Commit frequently
 - Keep CI green
 - Read the Codebase Patterns section in progress.txt before starting
+
+## DESIGN MANDATE (non-negotiable)
+Read DESIGN_SYSTEM.md before writing ANY code. Follow it exactly.
+DO NOT skip: Framer Motion animations, glassmorphism, CSS variables, hover/focus/active/disabled states, Lucide React icons, custom scrollbars, responsive breakpoints.
+Every component MUST have: TypeScript types, Framer Motion animation, hover state, focus-visible ring, rounded-xl cards / rounded-lg buttons, colors from CSS variables.
+Tech: Next.js 14 App Router, TypeScript 5, Tailwind, Framer Motion, Lucide React, Recharts.
+Quality: npx tsc --noEmit + npm run lint must pass.
