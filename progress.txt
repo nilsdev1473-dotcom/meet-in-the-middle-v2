@@ -60,3 +60,13 @@
   - Import "mapbox-gl/dist/mapbox-gl.css" inside the inner component to avoid SSR issues
   - react-map-gl MapRef provides flyTo/fitBounds directly; wrap with imperative handle for external control
 ---
+
+## 2026-03-07 - Story 5
+- What was implemented: Auto Geolocation Detection Hook & UI
+  - hooks/useGeolocation.ts: idle/loading/success/error/denied states, auto-request on mount, retry callback
+  - components/LocationDetector.tsx: AnimatePresence for all states, fallback manual input on denied
+- Files changed: hooks/useGeolocation.ts, components/LocationDetector.tsx
+- **Learnings for future iterations:**
+  - Use useRef to prevent double-calling onLocationFound in StrictMode
+  - navigator.geolocation.PERMISSION_DENIED is accessed via err.code === err.PERMISSION_DENIED
+---
