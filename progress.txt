@@ -105,3 +105,12 @@
   - Marker anchor="bottom" positions marker tip at coordinate
   - onAnimationComplete fires after the initial mount animation, used to start pulse
 ---
+
+## 2026-03-07 - Story 9
+- What was implemented: Center Calculation & Map Auto-Fit
+  - hooks/useMapCenter.ts: auto-calculates midpoint (via calculateCenter) when both locations set, calls fitBounds on mapRef, recalculates when coords change, uses refs to avoid double-runs
+- Files changed: hooks/useMapCenter.ts
+- **Learnings for future iterations:**
+  - Use prev-value refs to skip redundant recalculations in useEffect
+  - fitBounds needs [sw, ne] not [ne, sw] — verify coordinate order
+---
