@@ -51,7 +51,7 @@ const config: Config = {
         "px": "1px",
       },
       fontFamily: {
-        "sf-pro": ["SF Pro Display", "system-ui", "sans-serif"],
+        "inter": ["var(--font-inter)", "system-ui", "sans-serif"],
       },
       borderRadius: {
         "xl": "12px",
