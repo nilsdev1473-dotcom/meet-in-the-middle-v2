@@ -1,9 +1,17 @@
-export default function Home() {
+import { HomeContent } from "@/components/HomeContent";
+
+interface PageProps {
+  searchParams: Promise<{ lat?: string; lng?: string }>;
+}
+
+export default async function Home({ searchParams }: PageProps) {
+  const params = await searchParams;
+  const initialLat = params.lat ? parseFloat(params.lat) : undefined;
+  const initialLng = params.lng ? parseFloat(params.lng) : undefined;
+
   return (
-    <main className="min-h-screen bg-background">
-      <h1 className="text-3xl font-bold tracking-tight text-foreground">
-        Meet in the Middle
-      </h1>
+    <main className="overflow-hidden">
+      <HomeContent initialLat={initialLat} initialLng={initialLng} />
     </main>
   );
 }
