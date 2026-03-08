@@ -13,7 +13,7 @@ export interface Location {
 export interface Venue {
   id: string;
   name: string;
-  type: "bar" | "cafe" | "restaurant";
+  type: "bar" | "cafe" | "restaurant" | "pub";
   coordinates: Coordinates;
   distance: number;
   address: string;

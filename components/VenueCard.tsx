@@ -3,8 +3,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { Coffee, Beer, UtensilsCrossed, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { formatDistance } from "@/lib/geo-utils";
-import type { Venue } from "@/lib/types";
+import type { Venue } from "@/lib/store";
 
 export interface VenueCardProps {
   venue: Venue;
@@ -13,6 +12,7 @@ export interface VenueCardProps {
 const typeIcons = {
   cafe: Coffee,
   bar: Beer,
+  pub: Beer,
   restaurant: UtensilsCrossed,
 } as const;
 
@@ -21,7 +21,7 @@ export function VenueCard({ venue }: VenueCardProps) {
   const Icon = typeIcons[venue.type];
 
   const handleDirections = () => {
-    const { lat, lng } = venue.coordinates;
+    const { lat, lng } = venue;
     const ua = navigator.userAgent;
     const isApple = /iPhone|iPad|iPod/i.test(ua);
     const url = isApple
@@ -30,36 +30,43 @@ export function VenueCard({ venue }: VenueCardProps) {
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
+  const formatDistance = (meters?: number) => {
+    if (!meters) return "";
+    if (meters < 1000) return `${Math.round(meters)}m away`;
+    return `${(meters / 1000).toFixed(1)}km away`;
+  };
+
   return (
     <motion.div
-      className="rounded-2xl bg-[var(--card-bg)] p-6 min-w-[240px] flex flex-col gap-3"
-      style={{ boxShadow: "var(--ios-shadow)" }}
-      whileHover={
-        prefersReducedMotion
-          ? {}
-          : { scale: 1.02, boxShadow: "var(--ios-shadow-lg)" }
-      }
-      transition={
-        prefersReducedMotion ? { duration: 0 } : { duration: 0.15, ease: "easeOut" }
-      }
+      className="bg-white rounded-2xl p-4 shadow-lg border border-gray-100"
+      initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ scale: 1.02 }}
+      transition={{ duration: 0.2 }}
     >
       <div className="flex items-start gap-3">
-        <div className="p-2 rounded-xl bg-white" style={{ boxShadow: "var(--ios-shadow-sm)" }}>
-          <Icon className="w-5 h-5 text-[var(--ios-blue)]" />
+        <div className="shrink-0 w-10 h-10 rounded-xl bg-[#007AFF]/10 flex items-center justify-center">
+          <Icon className="w-5 h-5 text-[#007AFF]" />
         </div>
+        
         <div className="flex-1 min-w-0">
-          <p className="font-semibold text-sm text-[var(--foreground)] truncate">
+          <h3 className="font-semibold text-[#1D1D1F] text-sm truncate">
             {venue.name}
-          </p>
-          <p className="text-xs text-[var(--muted)] mt-0.5 flex items-center gap-1">
-            <MapPin className="w-3 h-3 flex-shrink-0" />
+          </h3>
+          <p className="text-xs text-[#86868B] mt-0.5">
             {formatDistance(venue.distance)}
           </p>
         </div>
+
+        <Button
+          onClick={handleDirections}
+          size="sm"
+          variant="ghost"
+          className="shrink-0"
+        >
+          <MapPin className="w-4 h-4" />
+        </Button>
       </div>
-      <Button variant="ghost" size="sm" onClick={handleDirections}>
-        Directions
-      </Button>
     </motion.div>
   );
 }

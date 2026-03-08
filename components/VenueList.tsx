@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { MapPin } from "lucide-react";
 import { VenueCard } from "./VenueCard";
-import type { Venue } from "@/lib/types";
+import type { Venue } from "@/lib/store";
 import {
   LIST_CONTAINER_VARIANTS,
   LIST_ITEM_VARIANTS,

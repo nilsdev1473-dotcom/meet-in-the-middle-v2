@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Share2 } from "lucide-react";
 import { Toast } from "@/components/ui/Toast";
-import type { Location } from "@/lib/types";
+import type { Location } from "@/lib/store";
 
 export interface ShareButtonProps {
   centerLocation: Location | null;
@@ -24,7 +24,7 @@ export function ShareButton({ centerLocation }: ShareButtonProps) {
   const handleShare = async () => {
     if (!centerLocation) return;
 
-    const { lat, lng } = centerLocation.coordinates;
+    const { lat, lng } = centerLocation;
     const url = `${window.location.origin}${window.location.pathname}?lat=${lat}&lng=${lng}&zoom=14`;
 
     try {

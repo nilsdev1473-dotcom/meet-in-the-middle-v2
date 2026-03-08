@@ -1,119 +1,79 @@
-import type { Venue, Coordinates } from "./types";
-import { calculateDistance, formatDistance } from "./geo-utils";
-import { reverseGeocode } from "./mapbox-geocoding";
+import type { Venue } from "./store";
 
-const GEOCODING_BASE = "https://api.mapbox.com/geocoding/v5/mapbox.places";
-const VENUE_TYPES = ["bar", "cafe", "restaurant"] as const;
-
-function getToken(): string {
-  const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
-  if (!token) throw new Error("NEXT_PUBLIC_MAPBOX_TOKEN is not set");
-  return token;
-}
-
-interface MapboxPoiFeature {
-  id: string;
-  text: string;
-  place_name: string;
-  center: [number, number]; // [lng, lat]
-  properties: {
-    category?: string;
-    maki?: string;
-  };
-}
-
-interface MapboxPoiResponse {
-  features: MapboxPoiFeature[];
-}
-
-function guessVenueType(
-  feature: MapboxPoiFeature
-): "bar" | "cafe" | "restaurant" {
-  const category = (feature.properties.category ?? "").toLowerCase();
-  const maki = (feature.properties.maki ?? "").toLowerCase();
-  const name = feature.text.toLowerCase();
-
-  if (
-    category.includes("bar") ||
-    category.includes("pub") ||
-    maki.includes("bar") ||
-    name.includes("bar") ||
-    name.includes("pub")
-  ) {
-    return "bar";
-  }
-  if (
-    category.includes("cafe") ||
-    category.includes("coffee") ||
-    maki.includes("cafe") ||
-    maki.includes("coffee") ||
-    name.includes("cafe") ||
-    name.includes("coffee")
-  ) {
-    return "cafe";
-  }
-  return "restaurant";
-}
-
-/**
- * Fetch nearby venues (bars, cafes, restaurants) within radiusMeters of center.
- * Uses Mapbox Geocoding API POI search. Returns max 10 results.
- */
 export async function fetchNearbyVenues(
-  center: Coordinates,
+  lat: number,
+  lng: number,
   radiusMeters: number = 500
 ): Promise<Venue[]> {
-  const token = getToken();
-  const results: Venue[] = [];
+  try {
+    // Overpass API query for bars, cafes, restaurants
+    const query = `
+      [out:json][timeout:25];
+      (
+        node["amenity"~"bar|cafe|restaurant|pub"](around:${radiusMeters},${lat},${lng});
+        way["amenity"~"bar|cafe|restaurant|pub"](around:${radiusMeters},${lat},${lng});
+      );
+      out body;
+      >;
+      out skel qt;
+    `;
 
-  // Fetch each category and merge
-  for (const type of VENUE_TYPES) {
-    const params = new URLSearchParams({
-      access_token: token,
-      limit: "5",
-      types: "poi",
-      proximity: `${center.lng},${center.lat}`,
+    const response = await fetch("https://overpass-api.de/api/interpreter", {
+      method: "POST",
+      body: query,
     });
 
-    const query = encodeURIComponent(type);
-    const url = `${GEOCODING_BASE}/${query}.json?${params.toString()}`;
-
-    try {
-      const response = await fetch(url);
-      if (!response.ok) continue;
-
-      const data = (await response.json()) as MapboxPoiResponse;
-
-      for (const feature of data.features) {
-        const coords: Coordinates = {
-          lat: feature.center[1],
-          lng: feature.center[0],
-        };
-
-        const distMeters = calculateDistance(center, coords);
-        if (distMeters > radiusMeters) continue;
-
-        // Avoid duplicates
-        if (results.some((v) => v.id === feature.id)) continue;
-
-        results.push({
-          id: feature.id,
-          name: feature.text,
-          type: guessVenueType(feature),
-          coordinates: coords,
-          distance: distMeters,
-          address: feature.place_name,
-        });
-      }
-    } catch {
-      // Silently skip failed category fetches
+    if (!response.ok) {
+      throw new Error("Failed to fetch venues from Overpass API");
     }
-  }
 
-  // Sort by distance, limit to 10
-  results.sort((a, b) => a.distance - b.distance);
-  return results.slice(0, 10);
+    const data = await response.json();
+
+    const venues: Venue[] = data.elements
+      .filter((el: any) => el.tags && el.tags.name && (el.lat || el.center))
+      .map((el: any) => {
+        const venueLat = el.lat || el.center?.lat || lat;
+        const venueLng = el.lon || el.center?.lon || lng;
+        const distance = calculateDistance(lat, lng, venueLat, venueLng);
+        const amenityType = el.tags.amenity as "bar" | "cafe" | "restaurant" | "pub";
+
+        return {
+          id: `${el.type}-${el.id}`,
+          name: el.tags.name,
+          lat: venueLat,
+          lng: venueLng,
+          type: amenityType,
+          distance,
+          address: el.tags["addr:full"] || "",
+          coordinates: { lat: venueLat, lng: venueLng },
+        };
+      })
+      .sort((a: Venue, b: Venue) => (a.distance || 0) - (b.distance || 0))
+      .slice(0, 10); // Limit to 10 results
+
+    return venues;
+  } catch (error) {
+    console.error("Error fetching venues:", error);
+    return [];
+  }
 }
 
-export { formatDistance };
-export type { Venue };
+function calculateDistance(
+  lat1: number,
+  lng1: number,
+  lat2: number,
+  lng2: number
+): number {
+  const R = 6371e3; // Earth's radius in meters
+  const φ1 = (lat1 * Math.PI) / 180;
+  const φ2 = (lat2 * Math.PI) / 180;
+  const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+  const Δλ = ((lng2 - lng1) * Math.PI) / 180;
+
+  const a =
+    Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+    Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return R * c; // Distance in meters
+}
