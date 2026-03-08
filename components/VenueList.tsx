@@ -4,25 +4,15 @@ import { motion } from "framer-motion";
 import { MapPin } from "lucide-react";
 import { VenueCard } from "./VenueCard";
 import type { Venue } from "@/lib/types";
+import {
+  LIST_CONTAINER_VARIANTS,
+  LIST_ITEM_VARIANTS,
+} from "@/lib/motion";
 
 export interface VenueListProps {
   venues: Venue[];
   loading?: boolean;
 }
-
-const containerVariants = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.05,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
-};
 
 function SkeletonCard() {
   return (
@@ -62,12 +52,12 @@ export function VenueList({ venues, loading = false }: VenueListProps) {
   return (
     <motion.div
       className="flex gap-4 overflow-x-auto pb-4 md:flex-col md:overflow-x-visible md:pb-0"
-      variants={containerVariants}
+      variants={LIST_CONTAINER_VARIANTS}
       initial="hidden"
       animate="visible"
     >
       {venues.map((venue) => (
-        <motion.div key={venue.id} variants={itemVariants}>
+        <motion.div key={venue.id} variants={LIST_ITEM_VARIANTS}>
           <VenueCard venue={venue} />
         </motion.div>
       ))}

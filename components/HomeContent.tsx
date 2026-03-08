@@ -14,20 +14,11 @@ import { useMapCenter } from "@/hooks/useMapCenter";
 import { fetchNearbyVenues } from "@/lib/venues";
 import { reverseGeocode } from "@/lib/mapbox-geocoding";
 import type { MapState, Location, Venue } from "@/lib/types";
-
-const pageContainerVariants = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.08,
-    },
-  },
-};
-
-const pageItemVariants = {
-  hidden: { opacity: 0, y: 16 },
-  visible: { opacity: 1, y: 0 },
-};
+import {
+  PAGE_CONTAINER_VARIANTS,
+  PAGE_ITEM_VARIANTS,
+  SPRING_CONFIG,
+} from "@/lib/motion";
 
 export interface HomeContentProps {
   initialLat?: number;
@@ -122,9 +113,7 @@ export function HomeContent({ initialLat, initialLng }: HomeContentProps) {
       .catch(() => {});
   }, [userLat, userLng, userAddress]);
 
-  const springConfig = prefersReducedMotion
-    ? { duration: 0 }
-    : { type: "spring" as const, stiffness: 300, damping: 30 };
+  const springConfig = prefersReducedMotion ? { duration: 0 } : SPRING_CONFIG;
 
   const markers = (
     <>
@@ -218,14 +207,14 @@ export function HomeContent({ initialLat, initialLng }: HomeContentProps) {
         {/* Left panel */}
         <motion.div
           className="w-[400px] flex-shrink-0 overflow-y-auto p-8 bg-[var(--background)] border-r border-[#E5E5EA]"
-          variants={pageContainerVariants}
+          variants={PAGE_CONTAINER_VARIANTS}
           initial="hidden"
           animate="visible"
         >
           {/* Heading */}
           <motion.h1
             className="text-3xl font-bold tracking-tight mb-6 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] bg-clip-text text-transparent"
-            variants={prefersReducedMotion ? {} : pageItemVariants}
+            variants={prefersReducedMotion ? {} : PAGE_ITEM_VARIANTS}
           >
             Meet in the Middle
           </motion.h1>
@@ -233,7 +222,7 @@ export function HomeContent({ initialLat, initialLng }: HomeContentProps) {
           {/* Location detector */}
           <motion.div
             className="mb-6"
-            variants={prefersReducedMotion ? {} : pageItemVariants}
+            variants={prefersReducedMotion ? {} : PAGE_ITEM_VARIANTS}
           >
             <p className="text-sm font-medium text-[var(--muted)] mb-2 uppercase tracking-wide text-xs">
               Your Location
@@ -251,7 +240,7 @@ export function HomeContent({ initialLat, initialLng }: HomeContentProps) {
           {/* Friend input inline */}
           <motion.div
             className="mb-6"
-            variants={prefersReducedMotion ? {} : pageItemVariants}
+            variants={prefersReducedMotion ? {} : PAGE_ITEM_VARIANTS}
           >
             <AnimatePresence mode="wait">
               {!friendLocated ? (
@@ -286,7 +275,7 @@ export function HomeContent({ initialLat, initialLng }: HomeContentProps) {
             {mapState.centerLocation && (
               <motion.div
                 key="venues-desktop"
-                variants={prefersReducedMotion ? {} : pageItemVariants}
+                variants={prefersReducedMotion ? {} : PAGE_ITEM_VARIANTS}
                 initial="hidden"
                 animate="visible"
               >
