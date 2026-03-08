@@ -146,3 +146,14 @@
   - Extract optional chaining values to const before useEffect deps array to satisfy react-hooks/exhaustive-deps
   - lg:hidden / hidden lg:flex pattern for mobile/desktop layout switching avoids media query JS
 ---
+
+## 2026-03-08 - Story 13
+- What was implemented: Spring Animations & Motion Polish
+  - lib/motion.ts: SPRING_CONFIG, SPRING_FAST, SPRING_MARKER, TRANSITION_CARD, PAGE_CONTAINER_VARIANTS, PAGE_ITEM_VARIANTS, LIST_CONTAINER_VARIANTS, LIST_ITEM_VARIANTS as const
+  - Updated HomeContent.tsx to import from lib/motion.ts
+  - Updated VenueList.tsx to use LIST_CONTAINER_VARIANTS/LIST_ITEM_VARIANTS
+- Files changed: lib/motion.ts, components/HomeContent.tsx, components/VenueList.tsx
+- **Learnings for future iterations:**
+  - Centralize spring configs in lib/motion.ts from the start to avoid duplicating magic numbers
+  - `as const` on spring config objects ensures TypeScript infers literal types for Framer Motion
+---
