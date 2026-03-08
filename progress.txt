@@ -135,3 +135,14 @@
   - createPortal needs `typeof document !== "undefined"` guard for SSR
   - navigator.clipboard.writeText returns Promise — use async/await with try/catch
 ---
+
+## 2026-03-08 - Story 12
+- What was implemented: Main Page Layout & Responsive Design
+  - components/HomeContent.tsx: mobile (full-screen map + floating overlays) + desktop (400px side panel + map); AnimatePresence on all overlays; stagger page-load for desktop panel
+  - app/page.tsx: reads URL searchParams (lat/lng), passes to HomeContent; async searchParams for Next.js 14
+- Files changed: components/HomeContent.tsx, app/page.tsx
+- **Learnings for future iterations:**
+  - Next.js 14 App Router: searchParams in Server Components is now a Promise — await it
+  - Extract optional chaining values to const before useEffect deps array to satisfy react-hooks/exhaustive-deps
+  - lg:hidden / hidden lg:flex pattern for mobile/desktop layout switching avoids media query JS
+---
